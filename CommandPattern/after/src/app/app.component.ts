@@ -3,12 +3,13 @@ import { fromEvent } from 'rxjs';
 import { switchMap, takeUntil, pairwise } from 'rxjs/operators'
 import { ShapeType } from './shape-type';
 import { Point } from './point';
-import { ICommand } from './commands/ICommand';
+import { ICommand } from './commands/icommand';
 import { LineCommand } from './commands/line.command';
 import { EraseCommand } from './commands/erase.command';
 import { RectangleCommand } from './commands/rectangle.command';
 import { CircleCommand } from './commands/circle.command';
 import { FreeCommand } from './commands/free.command';
+import { MacroCommand } from './commands/macro.command';
 
 @Component({
   selector: 'app-root',
@@ -16,29 +17,27 @@ import { FreeCommand } from './commands/free.command';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements AfterViewInit{
-  @ViewChild('canvas', {static: false}) public canvas: ElementRef;
+  @ViewChild('canvas', {static: false}) public canvasElement: ElementRef;
 
   @Input() public width = 700;
   @Input() public height = 700;
 
   private shapeType: ShapeType = ShapeType.FreeLine;
 
-  private cx: CanvasRenderingContext2D;
-
-  private commands: ICommand[] = [];
-
-  private undoCommands: ICommand[] = [];
+  private macro: MacroCommand;
 
   public ngAfterViewInit() {
-    const canvasEl: HTMLCanvasElement = this.canvas.nativeElement;
-    this.cx = canvasEl.getContext("2d");
+    const canvasEl: HTMLCanvasElement = this.canvasElement.nativeElement;
+    const canvas = canvasEl.getContext("2d");
 
     canvasEl.width = this.width;
     canvasEl.height = this.height;
 
-    this.cx.lineWidth = 3;
-    this.cx.lineCap = "round";
-    this.cx.strokeStyle = "#000";
+    canvas.lineWidth = 3;
+    canvas.lineCap = "round";
+    canvas.strokeStyle = "#000";
+
+    this.macro = new MacroCommand(canvas, this.width, this.height);
 
     this.captureEvents(canvasEl);
   }
@@ -64,24 +63,12 @@ export class AppComponent implements AfterViewInit{
   }
 
   public undo(): void {
-    if (this.commands.length > 0) {
-      let poppedCommand = this.commands.pop();
-      this.undoCommands.push(poppedCommand);
-      this.cx.clearRect(0, 0,this.width, this.height);
-      this.executeCommands();
-    }
+    this.macro.undo();
   }
 
   public redo(): void {
-    if (this.undoCommands.length > 0) {
-      let poppedCommand = this.undoCommands.pop();
-      this.commands.push(poppedCommand);
-      this.cx.clearRect(0, 0,this.width, this.height);
-      this.executeCommands();
-    }
+    this.macro.redo();
   }
-  
-
 
   private captureEvents(canvasEl: HTMLCanvasElement) {
     let startPosition:Point = null;
@@ -107,8 +94,6 @@ export class AppComponent implements AfterViewInit{
         points = [];
       }
     });
-
-   
 
     canvasEl.addEventListener("mousedown", e => {
       const rect = canvasEl.getBoundingClientRect();
@@ -152,43 +137,28 @@ export class AppComponent implements AfterViewInit{
   }
 
   private drawCircle(prevPos: Point, currentPos: Point) {
-    const circleCommand = new CircleCommand(prevPos, currentPos, this.cx);
-    this.undoCommands.length = 0;
-    this.commands.push(circleCommand);
-    this.executeCommands();
+    const circleCommand = new CircleCommand(prevPos, currentPos);
+    this.macro.add(circleCommand);
   }
 
   private drawRectangle(prevPos: Point, currentPos: Point) {
-      const rectangleCommand = new RectangleCommand(prevPos, currentPos, this.cx);
-      this.undoCommands.length = 0;
-      this.commands.push(rectangleCommand);
-      this.executeCommands();
+      const rectangleCommand = new RectangleCommand(prevPos, currentPos);
+      this.macro.add(rectangleCommand);
   }
 
   private drawFree(points: Point[]) {
-    const freeCommand = new FreeCommand(points, this.cx);
-    this.undoCommands.length = 0;
-    this.commands.push(freeCommand);
-    this.executeCommands();
+    const freeCommand = new FreeCommand(points);
+    this.macro.add(freeCommand);
   }
 
   private clearScreen() {
-    const eraseCommand = new EraseCommand(new Point(0,0), new Point(this.width, this.height), this.cx);
-    this.undoCommands.length = 0;
-    this.commands.push(eraseCommand);
-    this.executeCommands();
+    const eraseCommand = new EraseCommand(new Point(0,0), new Point(this.width, this.height));
+    this.macro.add(eraseCommand);
   }
 
   private drawLine(prevPos: Point, currentPos: Point) {
-    const drawLineCommand = new LineCommand(prevPos, currentPos, this.cx);
-    this.undoCommands.length = 0;
-    this.commands.push(drawLineCommand);
-    this.executeCommands();
+    const drawLineCommand = new LineCommand(prevPos, currentPos);
+    this.macro.add(drawLineCommand);
   }
 
-  private executeCommands(): void {
-    for (const command of this.commands){
-      command.execute();
-    }
-  }
 }

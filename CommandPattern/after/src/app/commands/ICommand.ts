@@ -1,5 +1,5 @@
 
 
-export interface ICommand{
-    execute();
+export interface ICommand {
+    execute(canvas: CanvasRenderingContext2D);
 }

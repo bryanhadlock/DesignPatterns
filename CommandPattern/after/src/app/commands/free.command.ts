@@ -1,26 +1,26 @@
-import { ICommand } from './ICommand';
+import { ICommand } from './icommand';
 import { Point } from '../point';
 
 
 export class FreeCommand implements ICommand {
 
-    constructor(private points: Point[], private canvas: CanvasRenderingContext2D) { }
+    constructor(private points: Point[]) { }
     
-    execute() {
+    execute(canvas: CanvasRenderingContext2D) {
         let previousPoint: Point;
         for (const point of this.points) {
           if (previousPoint) {
-            this.drawLine(previousPoint, point);
+            this.drawLine(previousPoint, point, canvas);
           }
           previousPoint = point;
         }
     }
 
-    drawLine(startPoint: Point, endPoint: Point) {
-        this.canvas.beginPath();
-        this.canvas.moveTo(startPoint.x, startPoint.y);
-        this.canvas.lineTo(endPoint.x, endPoint.y);
-        this.canvas.stroke();
+    drawLine(startPoint: Point, endPoint: Point, canvas: CanvasRenderingContext2D) {
+        canvas.beginPath();
+        canvas.moveTo(startPoint.x, startPoint.y);
+        canvas.lineTo(endPoint.x, endPoint.y);
+        canvas.stroke();
     }
     
 }

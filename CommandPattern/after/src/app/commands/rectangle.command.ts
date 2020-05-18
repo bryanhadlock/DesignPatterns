@@ -1,15 +1,15 @@
-import { ICommand } from './ICommand';
+import { ICommand } from './icommand';
 import { Point } from '../point';
 
 
 export class RectangleCommand implements ICommand {
 
-    constructor(private startPoint: Point, private endPoint: Point, private canvas: CanvasRenderingContext2D) { }
+    constructor(private startPoint: Point, private endPoint: Point) { }
     
-    execute() {
-        this.canvas.beginPath();
-        this.canvas.rect(this.startPoint.x, this.startPoint.y, this.endPoint.x - this.startPoint.x, this.endPoint.y - this.startPoint.y );
-        this.canvas.stroke();
+    execute(canvas: CanvasRenderingContext2D) {
+        canvas.beginPath();
+        canvas.rect(this.startPoint.x, this.startPoint.y, this.endPoint.x - this.startPoint.x, this.endPoint.y - this.startPoint.y );
+        canvas.stroke();
     }
     
 }

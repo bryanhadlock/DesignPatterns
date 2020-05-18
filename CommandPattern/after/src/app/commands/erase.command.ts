@@ -1,13 +1,13 @@
-import { ICommand } from './ICommand';
+import { ICommand } from './icommand';
 import { Point } from '../point';
 
 
 export class EraseCommand implements ICommand {
 
-    constructor(private startPoint: Point, private endPoint: Point, private canvas: CanvasRenderingContext2D) { }
+    constructor(private startPoint: Point, private endPoint: Point) { }
     
-    execute() {
-        this.canvas.clearRect(this.startPoint.x, this.startPoint.y,this.endPoint.x, this.endPoint.y);
+    execute(canvas: CanvasRenderingContext2D) {
+        canvas.clearRect(this.startPoint.x, this.startPoint.y,this.endPoint.x, this.endPoint.y);
     }
     
 }

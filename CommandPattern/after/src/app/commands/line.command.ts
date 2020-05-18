@@ -1,15 +1,15 @@
-import { ICommand } from './ICommand';
+import { ICommand } from './icommand';
 import { Point } from '../point';
 
 
 export class LineCommand implements ICommand {
 
-    constructor(private startPoint: Point, private endPoint: Point, private canvas: CanvasRenderingContext2D) { }
+    constructor(private startPoint: Point, private endPoint: Point) { }
     
-    execute() {
-        this.canvas.beginPath();
-        this.canvas.moveTo(this.startPoint.x, this.startPoint.y);
-        this.canvas.lineTo(this.endPoint.x, this.endPoint.y);
-        this.canvas.stroke();
+    execute(canvas: CanvasRenderingContext2D) {
+        canvas.beginPath();
+        canvas.moveTo(this.startPoint.x, this.startPoint.y);
+        canvas.lineTo(this.endPoint.x, this.endPoint.y);
+        canvas.stroke();
     }
 }
