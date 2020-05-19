@@ -1,5 +1,5 @@
 import { ICommand } from './icommand';
-import { Point } from '../point';
+import { Point } from '../models/point';
 
 
 export class FreeCommand implements ICommand {

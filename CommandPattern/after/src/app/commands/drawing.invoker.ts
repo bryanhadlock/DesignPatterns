@@ -1,7 +1,7 @@
 import { ICommand } from './icommand';
 
 
-export class MacroCommand {
+export class DrawingInvoker {
 
     private commands: ICommand[] = [];
 

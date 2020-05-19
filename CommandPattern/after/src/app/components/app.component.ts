@@ -1,20 +1,18 @@
 import { Component, Input, ElementRef, AfterViewInit, ViewChild } from '@angular/core';
 import { fromEvent } from 'rxjs';
 import { switchMap, takeUntil, pairwise } from 'rxjs/operators'
-import { ShapeType } from './shape-type';
-import { Point } from './point';
-import { ICommand } from './commands/icommand';
-import { LineCommand } from './commands/line.command';
-import { EraseCommand } from './commands/erase.command';
-import { RectangleCommand } from './commands/rectangle.command';
-import { CircleCommand } from './commands/circle.command';
-import { FreeCommand } from './commands/free.command';
-import { MacroCommand } from './commands/macro.command';
+import { ShapeType } from '../models/shape-type';
+import { Point } from '../models/point';
+import { LineCommand } from '../commands/line.command';
+import { EraseCommand } from '../commands/erase.command';
+import { RectangleCommand } from '../commands/rectangle.command';
+import { CircleCommand } from '../commands/circle.command';
+import { FreeCommand } from '../commands/free.command';
+import { DrawingInvoker } from '../commands/drawing.invoker';
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  templateUrl: './app.component.html'
 })
 export class AppComponent implements AfterViewInit{
   @ViewChild('canvas', {static: false}) public canvasElement: ElementRef;
@@ -24,7 +22,7 @@ export class AppComponent implements AfterViewInit{
 
   private shapeType: ShapeType = ShapeType.FreeLine;
 
-  private macro: MacroCommand;
+  private drawing: DrawingInvoker;
 
   public ngAfterViewInit() {
     const canvasEl: HTMLCanvasElement = this.canvasElement.nativeElement;
@@ -37,7 +35,7 @@ export class AppComponent implements AfterViewInit{
     canvas.lineCap = "round";
     canvas.strokeStyle = "#000";
 
-    this.macro = new MacroCommand(canvas, this.width, this.height);
+    this.drawing = new DrawingInvoker(canvas, this.width, this.height);
 
     this.captureEvents(canvasEl);
   }
@@ -61,13 +59,39 @@ export class AppComponent implements AfterViewInit{
   public clear(): void {
     this.clearScreen();
   }
+  
 
   public undo(): void {
-    this.macro.undo();
+    this.drawing.undo();
   }
 
   public redo(): void {
-    this.macro.redo();
+    this.drawing.redo();
+  }
+
+  private drawCircle(prevPos: Point, currentPos: Point) {
+    const circleCommand = new CircleCommand(prevPos, currentPos);
+    this.drawing.add(circleCommand);
+  }
+
+  private drawRectangle(prevPos: Point, currentPos: Point) {
+      const rectangleCommand = new RectangleCommand(prevPos, currentPos);
+      this.drawing.add(rectangleCommand);
+  }
+
+  private drawFree(points: Point[]) {
+    const freeCommand = new FreeCommand(points);
+    this.drawing.add(freeCommand);
+  }
+
+  private clearScreen() {
+    const eraseCommand = new EraseCommand(new Point(0,0), new Point(this.width, this.height));
+    this.drawing.add(eraseCommand);
+  }
+
+  private drawLine(prevPos: Point, currentPos: Point) {
+    const drawLineCommand = new LineCommand(prevPos, currentPos);
+    this.drawing.add(drawLineCommand);
   }
 
   private captureEvents(canvasEl: HTMLCanvasElement) {
@@ -124,7 +148,6 @@ export class AppComponent implements AfterViewInit{
         })
       )
       .subscribe((res: [MouseEvent, MouseEvent]) => {
-
         if (this.shapeType == ShapeType.FreeLine) {
           const rect = canvasEl.getBoundingClientRect();
           const position = {
@@ -135,30 +158,4 @@ export class AppComponent implements AfterViewInit{
         }
       });
   }
-
-  private drawCircle(prevPos: Point, currentPos: Point) {
-    const circleCommand = new CircleCommand(prevPos, currentPos);
-    this.macro.add(circleCommand);
-  }
-
-  private drawRectangle(prevPos: Point, currentPos: Point) {
-      const rectangleCommand = new RectangleCommand(prevPos, currentPos);
-      this.macro.add(rectangleCommand);
-  }
-
-  private drawFree(points: Point[]) {
-    const freeCommand = new FreeCommand(points);
-    this.macro.add(freeCommand);
-  }
-
-  private clearScreen() {
-    const eraseCommand = new EraseCommand(new Point(0,0), new Point(this.width, this.height));
-    this.macro.add(eraseCommand);
-  }
-
-  private drawLine(prevPos: Point, currentPos: Point) {
-    const drawLineCommand = new LineCommand(prevPos, currentPos);
-    this.macro.add(drawLineCommand);
-  }
-
 }
