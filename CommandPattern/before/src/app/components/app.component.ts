@@ -39,8 +39,8 @@ export class AppComponent implements AfterViewInit{
     this.shapeType = ShapeType.Rectangle;
   }
 
-  public line(): void {
-    this.shapeType = ShapeType.StraightLine;
+  public circle(): void {
+    this.shapeType = ShapeType.Circle;
   }
 
   public free(): void {
@@ -71,7 +71,7 @@ export class AppComponent implements AfterViewInit{
     this.drawing.erase(new Point(0, 0), new Point(this.width, this.height));
   }
 
-  private drawLine(prevPos: Point, currentPos: Point) {
+  private drawCircle(prevPos: Point, currentPos: Point) {
     // TODO : Create Draw Line
   }
 
@@ -84,8 +84,8 @@ export class AppComponent implements AfterViewInit{
         x: e.clientX - rect.left,
         y: e.clientY - rect.top
       };
-      if (this.shapeType == ShapeType.StraightLine) {
-        this.drawLine(startPosition, currentPos);
+      if (this.shapeType == ShapeType.Circle) {
+        this.drawCircle(startPosition, currentPos);
       }
       else if (this.shapeType == ShapeType.Rectangle) {
         this.drawRectangle(startPosition, currentPos);

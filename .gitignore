@@ -45,3 +45,4 @@ testem.log
 .DS_Store
 Thumbs.db
 CommandPattern/after/node_modules/
+CommandPattern/before/node_modules/

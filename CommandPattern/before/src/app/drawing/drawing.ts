@@ -20,7 +20,7 @@ export class Drawing {
         }
     }
 
-    private drawLine(startPoint: Point, endPoint: Point) {
+    private drawLine(startPoint: Point, endPoint: Point): void {
         this.canvas.beginPath();
         this.canvas.moveTo(startPoint.x, startPoint.y);
         this.canvas.lineTo(endPoint.x, endPoint.y);
