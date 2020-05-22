@@ -72,12 +72,14 @@ export class AppComponent implements AfterViewInit{
   }
 
   private drawCircle(prevPos: Point, currentPos: Point) {
-    // TODO : Create Draw Line
+    // TODO : Create Draw Circle
   }
 
+  // Ugly code this doesn't have anything to do with the pattern right now so I'm not gonna clean it up
   private captureEvents(canvasEl: HTMLCanvasElement) {
     let startPosition:Point = null;
     let points: Point[] = [];
+
     canvasEl.addEventListener("mouseup", e => {
       const rect = canvasEl.getBoundingClientRect();
       const currentPos:Point = {

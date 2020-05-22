@@ -74,6 +74,7 @@ export class AppComponent implements AfterViewInit{
     this.drawing.add(circleCommand);
   }
 
+  // TODO: Factory Pattern
   private drawRectangle(prevPos: Point, currentPos: Point) {
       const rectangleCommand = new RectangleCommand(prevPos, currentPos);
       this.drawing.add(rectangleCommand);
