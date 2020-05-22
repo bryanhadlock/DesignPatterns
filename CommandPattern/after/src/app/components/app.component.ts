@@ -79,28 +79,28 @@ export class AppComponent implements AfterViewInit{
 
   private drawCircle(prevPos: Point, currentPos: Point) {
     const circleCommand = new CircleCommand(prevPos, currentPos);
-    this.drawing.add(circleCommand);
+    this.drawing.draw(circleCommand);
   }
 
   // TODO: Factory Pattern
   private drawRectangle(prevPos: Point, currentPos: Point) {
       const rectangleCommand = new RectangleCommand(prevPos, currentPos);
-      this.drawing.add(rectangleCommand);
+      this.drawing.draw(rectangleCommand);
   }
 
   private drawFree(points: Point[]) {
     const freeCommand = new FreeCommand(points);
-    this.drawing.add(freeCommand);
+    this.drawing.draw(freeCommand);
   }
 
   private clearScreen() {
     const eraseCommand = new EraseCommand(new Point(0,0), new Point(this.width, this.height));
-    this.drawing.add(eraseCommand);
+    this.drawing.draw(eraseCommand);
   }
 
   private drawLine(prevPos: Point, currentPos: Point) {
     const drawLineCommand = new LineCommand(prevPos, currentPos);
-    this.drawing.add(drawLineCommand);
+    this.drawing.draw(drawLineCommand);
   }
 
   private captureEvents(canvasEl: HTMLCanvasElement) {

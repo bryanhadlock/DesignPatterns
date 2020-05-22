@@ -9,7 +9,7 @@ export class DrawingInvoker {
 
     constructor(private canvas: CanvasRenderingContext2D, private width:number, private height:number) { }
 
-    public add(command: ICommand) {
+    public draw(command: ICommand) {
         this.undoneCommands.length = 0;
         command.execute(this.canvas);
         this.commands.push(command);
