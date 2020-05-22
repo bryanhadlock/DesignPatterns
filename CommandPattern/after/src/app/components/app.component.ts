@@ -40,6 +40,14 @@ export class AppComponent implements AfterViewInit{
     this.captureEvents(canvasEl);
   }
 
+  get enableRedo(): boolean {
+    return this.drawing && this.drawing.undoneCommands.length > 0;
+  }
+
+  get enableUndo(): boolean {
+    return this.drawing && this.drawing.commands.length > 0;
+  }
+
   public square(): void {
     this.shapeType = ShapeType.Square;
   }

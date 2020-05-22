@@ -3,38 +3,38 @@ import { ICommand } from './icommand';
 
 export class DrawingInvoker {
 
-    private commands: ICommand[] = [];
+    commands: ICommand[] = [];
 
-    private undoCommands: ICommand[] = [];
+    undoneCommands: ICommand[] = [];
 
     constructor(private canvas: CanvasRenderingContext2D, private width:number, private height:number) { }
 
     public add(command: ICommand) {
-        this.undoCommands.length = 0;
+        this.undoneCommands.length = 0;
+        command.execute(this.canvas);
         this.commands.push(command);
-        this.executeCommands();
     }
 
     public undo(): void {
         if (this.commands.length > 0) {
           let poppedCommand = this.commands.pop();
-          this.undoCommands.push(poppedCommand);
+          this.undoneCommands.push(poppedCommand);
           this.canvas.clearRect(0, 0,this.width, this.height);
-          this.executeCommands();
+          this.execute();
         }
     }
     
     public redo(): void {
-        if (this.undoCommands.length > 0) {
-          let poppedCommand = this.undoCommands.pop();
+        if (this.undoneCommands.length > 0) {
+          let poppedCommand = this.undoneCommands.pop();
           this.commands.push(poppedCommand);
           this.canvas.clearRect(0, 0,this.width, this.height);
-          this.executeCommands();
+          this.execute();
         }
       } 
 
 
-    public executeCommands(): void {
+    public execute(): void {
         for (const command of this.commands){
           command.execute(this.canvas);
         }
